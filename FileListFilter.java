@@ -2,17 +2,25 @@ import java.io.*;
 import java.util.*;
 
 public class FileListFilter {
-	public ArrayList<File> listFiles(String path) {
-		final ArrayList<File> directory_list = new ArrayList<File>();
-		final ArrayList<File> results = new ArrayList<File>();
+	/// class variable
+	ArrayList<File> files = new ArrayList<File>();
+	final boolean RESULT_OK = true;
+
+	public int listFiles(String path,
+			ArrayList<File> file_list, ArrayList<File> directory_list) {
+		final ArrayList<File> results = file_list;
+		final ArrayList<File> my_directory_list = directory_list;
 		FileFilter filter = new FileFilter() {
 			@Override
 			public boolean accept(File myfile){
-				if(!myfile.isFile() || !myfile.getName().endsWith("apk")){
+				if(myfile.isDirectory()){
+					my_directory_list.add(myfile);
 					return false;
-				}else {
+				}else if (myfile.getName().endsWith("apk")){
 					results.add(myfile);
 					return true;
+				}else {
+					return false;
 				}
 			}
 		};
@@ -24,16 +32,43 @@ public class FileListFilter {
 			System.err.println("NullPointerException: " + e.getMessage());
 		}
 
-		return results;
+		return directory_list.size();
 	}
 
-	public static void main (String args[]) {
-		FileListFilter fl = new FileListFilter();
-		String path = "/media/knxy/Software/android_apk";
-		ArrayList<File> files = fl.listFiles(path);
+	public boolean traverseDir(String path){
+		boolean more_dir = true;
+		int subDirectoryCount = 0;
 
+		ArrayList<File> directory_list = new ArrayList<File>();
+		subDirectoryCount = listFiles(path, files, directory_list);
+		if (subDirectoryCount>0){
+			for ( File dir : directory_list){
+				traverseDir(dir.getPath());
+			}
+		}else{
+		}
+
+		return RESULT_OK;
+	}
+
+	public void printFiles(){
 		for ( File myfile : files ){
 			System.out.println(myfile);
 		}
+	}
+
+	public static void main (String args[]) {
+		//ArrayList<File> directory_list = new ArrayList<File>();
+		//ArrayList<File> file_list = new ArrayList<File>();
+		FileListFilter fl = new FileListFilter();
+		String path = "/media/knxy/Software/android_apk";
+		fl.traverseDir(path);
+		fl.printFiles();
+
+
+		//System.out.println("Directory: ");
+		//for ( File mydir : directory_list ){
+		//	System.out.println(mydir);
+		//}
 	}
 }
