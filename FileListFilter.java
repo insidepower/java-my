@@ -5,6 +5,7 @@ public class FileListFilter {
 	/// class variable
 	ArrayList<File> files = new ArrayList<File>();
 	final boolean RESULT_OK = true;
+	boolean enableSubDirScan = false;
 
 	public int listFiles(String path,
 			ArrayList<File> file_list, ArrayList<File> directory_list) {
@@ -41,7 +42,7 @@ public class FileListFilter {
 
 		ArrayList<File> directory_list = new ArrayList<File>();
 		subDirectoryCount = listFiles(path, files, directory_list);
-		if (subDirectoryCount>0){
+		if (subDirectoryCount>0 && enableSubDirScan){
 			for ( File dir : directory_list){
 				traverseDir(dir.getPath());
 			}
@@ -53,7 +54,7 @@ public class FileListFilter {
 
 	public void printFiles(){
 		for ( File myfile : files ){
-			System.out.println(myfile);
+			System.out.println(myfile.getName());
 		}
 	}
 
